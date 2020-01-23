@@ -1,0 +1,187 @@
+---
+title: 'Investigating NASA fireballs'
+author: "Jason Lee"
+output: html_document
+---
+
+
+
+## Understanding the Data
+We'll work with a dataset that shows when and where fireballs have been seen. Dataset is acquired from NASA the center of sensors.
+
+Columns:
+
+1. date - time fireball seen
+2. energy - energy of joules
+3. impact_e - total impact energy
+4. lat - latitude
+5. lat_dir - latitude direction
+6. lon - longitude
+7. lon_dir - longitude direction
+8. alt - altitude
+9. vel - velocity of fireball in KM per second
+
+
+
+```{r message=FALSE}
+library("shinydashboard")
+library("shiny")
+library("readr")
+
+nasa_filepath <- ("cneos_fireball_data.csv")
+nasa_fireball <- read.csv(nasa_filepath)
+
+```
+
+## Explore data
+```{r}
+# Print the nasa_fireball data frame
+print(head(nasa_fireball))
+```
+
+```{r}
+# Examine the types of variables present
+#nasa_fireball$energy <- as.numeric(nasa_fireball$energy)
+sapply(nasa_fireball, class)
+
+```
+
+```{r}
+# Observe the number of observations in this data frame
+nrow(nasa_fireball)
+```
+
+```{r}
+# Check for missing data
+sapply(nasa_fireball,anyNA)
+```
+
+## Build Dashboard
+
+### Value boxes
+First, I'll create a value boxs showing the maximum values for velocity, energy and impact energy.
+
+```{r}
+
+max_impact_e <- max(nasa_fireball$impact_e, na.rm = TRUE)
+max_vel <- max(nasa_fireball$vel, na.rm = TRUE)
+max_energy <- max(nasa_fireball$energy, na.rm = TRUE)
+
+body <- dashboardBody(
+  fluidRow(
+    # Add a value box for maximum energy
+    valueBox(
+      value = max_energy,
+      subtitle = "Maximum total radiated energy (Joules)",
+      icon = icon("lightbulb-o"),
+      color = "green"
+    ),
+    valueBox(
+      value = max_impact_e, 
+      subtitle = "Maximum impact energy (kilotons of TNT)",
+      icon = icon("star"),
+      color = "yellow"
+    ),
+    valueBox(
+      value = max_vel,
+      subtitle = "Maximum pre-impact velocity", 
+      icon = icon("fire"),
+      color = "red"
+
+    )
+  )
+)
+
+ui <- dashboardPage(header = dashboardHeader(),
+                    sidebar = dashboardSidebar(),
+                    body = body
+)
+#server function
+server <- function(input, output) {}
+
+shinyApp(ui, server)
+```
+
+
+
+# Building a map to visualize the fireballs
+```{r}
+library("leaflet")
+
+server <- function(input, output) {
+  output$plot <- renderLeaflet({
+    leaflet() %>%
+      addTiles() %>%  
+      addCircleMarkers(lng = nasa_fireball$lon, lat = nasa_fireball$lat, radius = log(nasa_fireball$impact_e), label = nasa_fireball$date, weight = 2)
+    })
+}
+
+body <- dashboardBody( 
+ leafletOutput("plot")
+)
+
+ui <- dashboardPage(
+  header = dashboardHeader(),
+  sidebar = dashboardSidebar(),
+  body = body
+)
+
+shinyApp(ui, server)
+
+```
+
+## Putting whole dashboard together
+```{r}
+library("leaflet")
+
+server <- function(input, output) {
+  output$plot <- renderLeaflet({
+    leaflet() %>%
+      addTiles() %>%  
+      addCircleMarkers(
+        lng = nasa_fireball$lon,
+        lat = nasa_fireball$lat, 
+        radius = log(nasa_fireball$impact_e), 
+        label = nasa_fireball$date, 
+        weight = 2)
+    })
+}
+
+body <- dashboardBody(
+ fluidRow(
+   valueBox(
+      value = max_energy,
+      subtitle = "Maximum total radiated energy (Joules)",
+      icon = icon("lightbulb-o"),
+      color = "green"
+    ),
+    valueBox(
+      value = max_impact_e, 
+      subtitle = "Maximum impact energy (kilotons of TNT)",
+      icon = icon("star"),
+      color = "yellow"
+    ),
+    valueBox(
+      value = max_vel,
+      subtitle = "Maximum pre-impact velocity", 
+      icon = icon("fire"),
+      color = "red"
+    ) 
+  ),
+  fluidRow(
+    leafletOutput("plot")
+  )
+)
+
+
+ui <- dashboardPage(
+  skin = "blue",
+  header = dashboardHeader(),
+  sidebar = dashboardSidebar(),
+  body = body
+)
+
+shinyApp(ui, server)
+
+```
+

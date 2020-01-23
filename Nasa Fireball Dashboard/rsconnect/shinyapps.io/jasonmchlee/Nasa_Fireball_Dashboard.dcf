@@ -1,0 +1,12 @@
+name: Nasa_Fireball_Dashboard
+title: Nasa_Fireball_Dashboard
+username:
+account: jasonmchlee
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1674890
+bundleId: 2738157
+url: https://jasonmchlee.shinyapps.io/Nasa_Fireball_Dashboard/
+when: 1579395086.49396
+asMultiple: FALSE
+asStatic: FALSE
