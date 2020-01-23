@@ -7,7 +7,7 @@ Repository focused on data visualisation techniques used on various data sets fo
 1. [Quality Alloys, Marketing Analytics](https://github.com/jasonmchlee/data-visualization/tree/master/Quality%20Alloy%20Case%20Study%2C%20Marketing%20Analytics)
 
 ## Shiny
-1. NASA Fireball]( - [Shiny Dashboard](https://jasonmchlee.shinyapps.io/Nasa_Fireball_Dashboard/)
+1. [NASA Fireball](https://github.com/jasonmchlee/data-visualization/tree/master/Nasa%20Fireball%20Dashboard) - [Shiny Dashboard](https://jasonmchlee.shinyapps.io/Nasa_Fireball_Dashboard/)
 
 ## Tableau
 
